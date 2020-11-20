@@ -1,5 +1,5 @@
 ---
-title: "Plotting basics with shapefiles"
+title: "Map visualization basics"
 author: "Paul Villanueva"
 date: "11/20/2020"
 output:
