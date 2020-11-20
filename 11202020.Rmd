@@ -30,8 +30,8 @@ knitr::opts_chunk$set(fig.align="center",
 # Along the way, we'll:
 
 - Learn some basics about shapefiles
-- Work with some open data from data.iowa.gov and geodata.iowa.gov
-- Use shapefiles with `ggplot2`
+- Work with some open data from `data.iowa.gov` and `geodata.iowa.gov`
+- Use simple features with `ggplot2`
 - Do a basic animation
 
 ---
@@ -65,7 +65,7 @@ git clone https://github.com/pommevilla/lunchinatoR.git
 
 ---
 
-# Reading in a shapefile
+# Reading in a simple feature
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 library(sf)
@@ -77,7 +77,7 @@ iowa.sf <- st_read('data/iowa_county_shapes')
 .footnote[Source: https://geodata.iowa.gov/dataset/county-boundaries-iowa]
 ---
 
-# What's in a shapefile?
+# What's in an `sf` object?
 
 ```{r}
 iowa.sf
@@ -85,10 +85,24 @@ iowa.sf
 
 
 ---
+
+# What's in an `sf` object?
+
+- An `sf` object is basically a data frame with a `geometry` column describing where the object is located on Earth.
+
+
+```{r}
+class(iowa.sf)
+```
+
+- Since it inherits from the `data.frame` class, you can do all the things you're used to with an `sf` object
+- `ggplot` has support for plotting simple features via `geom_sf`.
+
+.footnote[For a more in-depth walkthrough of the simple feature class, refer to [`sf` vignette](https://cran.r-project.org/web/packages/sf/vignettes/sf1.html)]
+---
 class: middle
 
 ### Use `ggplot::geom_sf` to plot shapefiles
-
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 library(tidyverse)
@@ -267,6 +281,18 @@ iowa.sf %>%
   geom_sf(data = iowa.districts, color = "red", fill = NA) #<< 
 ```
 
+
+---
+
+When we read in `iowa.districts`, we got a warning message that said "automatically selected the first layer in a data source containing more than one." This is because the `iowa_congressional_districts` folder contains more than one set of geometry information. You can access these with the `layer` argument of `st_read`:
+
+```{r warning=FALSE, message=FALSE, results='hide'}
+iowa.house_districts <-  
+  st_read('data/iowa_congressional_districts',
+          layer = "IA_House_2013")
+```
+
+Try plotting the other two geometries present in the `iowa_congressional_districts` folder.
 
 ---
 class: inverse, center, middle
