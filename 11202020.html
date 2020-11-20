@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Plotting basics with shapefiles</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Paul Villanueva" />
+    <meta name="date" content="2020-11-20" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Plotting basics with shapefiles
+### Paul Villanueva
+### 11/20/2020
+
+---
+
+class: middle
+
+
+
+
+# Today's goal:
+
+- Reproduce this animation:
+
+.center[
+&lt;img src="./pct_change_by_year.gif" width="600" /&gt;
+]
+
+---
+# Along the way, we'll:
+
+- Learn some basics about shapefiles
+- Work with some open data from data.iowa.gov and geodata.iowa.gov
+- Use shapefiles with `ggplot2`
+- Do a basic animation
+
+---
+# About me
+
+- Bioinformatics PhD student in Adina Howe's lab
+- Background in math and computer science
+- Previous project was MetaFunPrimer, a primer design pipeline for high-throughput qPCR.
+- Current research is on the impact of human activity on biodiversity and environmental multifunctionality.
+- Interested in machine learning, statistical modeling, Python, R, data visualiziation, reproducible research, and VIM
+---
+class: inverse, center, middle
+
+# Getting started
+
+---
+# Clone the repo:
+
+
+```r
+git clone https://github.com/pommevilla/lunchinatoR.git
+```
+
+
+# Install the packages we'll use today
+
+- `tidyverse`: data manipulation and visualization
+- `sf`: working with shapefiles
+- `gganimate`: animations
+- `ggthemes`: we'll use `theme_map()`  
+- `geofacet`: some bonus visualizations 
+
+---
+
+# Reading in a shapefile
+
+
+```r
+library(sf)
+
+iowa.sf &lt;- st_read('data/iowa_county_shapes') 
+```
+
+.footnote[Source: https://geodata.iowa.gov/dataset/county-boundaries-iowa]
+---
+
+# What's in a shapefile?
+
+
+```r
+iowa.sf
+```
+
+```
+## Simple feature collection with 99 features and 10 fields
+## geometry type:  POLYGON
+## dimension:      XY
+## bbox:           xmin: 202073.8 ymin: 4470598 xmax: 736849.2 ymax: 4822674
+## projected CRS:  NAD83 / UTM zone 15N
+## First 10 features:
+##    Shape_Leng Shape_Area       AREA PERIMETER CO_NUMBER CO_FIPS    ACRES  FIPS
+## 1    192784.4 1394779996 1394779996  192783.7        56     111 344657.6 19111
+## 2    146566.4 1335646711 1335646711  146566.5         4       7 330045.5 19007
+## 3    147784.7 1364467491 1364467491  147785.1        93     185 337167.3 19185
+## 4    148600.6 1381358612 1381358612  148600.8        27      53 341341.1 19053
+## 5    144994.2 1306355106 1306355106  144995.3        26      51 322807.4 19051
+## 6    146043.0 1270590821 1270590821  146043.4        89     177 313969.8 19177
+## 7    149323.9 1394401127 1394401127  149323.5        80     159 344564.0 19159
+## 8    150053.8 1384384206 1384384206  150052.3        87     173 342088.8 19173
+## 9    151615.0 1386916974 1386916974  151614.2        73     145 342714.6 19145
+## 10   152472.0 1338533928 1338533928  152470.5        36      71 330758.9 19071
+##       COUNTY ST                       geometry
+## 1        Lee IA POLYGON ((634170.7 4519205,...
+## 2  Appanoose IA POLYGON ((530372.2 4527603,...
+## 3      Wayne IA POLYGON ((454680.2 4527594,...
+## 4    Decatur IA POLYGON ((435312 4527874, 4...
+## 5      Davis IA POLYGON ((569161.2 4526465,...
+## 6  Van Buren IA POLYGON ((607982 4526969, 6...
+## 7   Ringgold IA POLYGON ((377640.2 4528611,...
+## 8     Taylor IA POLYGON ((339087.5 4529491,...
+## 9       Page IA POLYGON ((299921.7 4530537,...
+## 10   Fremont IA POLYGON ((263800.8 4531621,...
+```
+
+
+---
+class: middle
+
+### Use `ggplot::geom_sf` to plot shapefiles
+
+
+
+```r
+library(tidyverse)
+```
+
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf() 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
+---
+
+### `ggplot` and `dplyr` things work with `sf` objects
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = ACRES))
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### `ggplot` and `dplyr` things work with `sf` objects
+
+
+```r
+iowa.sf %&gt;% 
+* filter(COUNTY == "Lee") %&gt;%
+  ggplot() + 
+  geom_sf(aes(fill = ACRES))
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### `ggplot` and `dplyr` things work with `sf` objects
+
+
+```r
+iowa.sf %&gt;% 
+* filter(ACRES &lt; 340000) %&gt;%
+  ggplot() + 
+  geom_sf(aes(fill = ACRES)) 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+### Let's make it look nicer
+
+
+```r
+*theme_set(ggthemes::theme_map())
+
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = ACRES))
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = ACRES)) +
+* labs(title = "Iowa Counties",
+*      subtitle = "Filled by area")
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = ACRES)) +
+  labs(title = "Iowa Counties", 
+       subtitle = "Filled by area") +
+* theme(plot.title = element_text(hjust = 0.5),
+*       plot.subtitle = element_text(hjust = 0.5),
+*       legend.position = "none")
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(aes(fill = ACRES)) + 
+  labs(title = "Iowa Counties",
+       subtitle = "Filled by area",
+*      caption = "Source: https://geodata.iowa.gov/dataset/county-boundaries-iowa") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.position = "none") + 
+* geom_sf_text(aes(label = COUNTY), size = 2.25)
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+
+# Plotting multiple `sf` objects together
+
+---
+### Let's work with another `sf` object:
+
+
+```r
+iowa.districts &lt;- 
+  st_read('data/iowa_congressional_districts')
+```
+
+
+
+```r
+iowa.districts
+```
+
+
+.footnote[Source: http://cdmaps.polisci.ucla.edu]
+---
+
+### Let's see what the districts look like
+
+
+```r
+iowa.districts %&gt;% 
+  ggplot() +
+  geom_sf()
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+iowa.districts %&gt;% 
+  ggplot() +
+* geom_sf(color = "red", fill = "white" ) +
+* labs(title = "Iowa Congressional Districts") +
+* theme(plot.title = element_text(hjust = 0.5))
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### To plot multiple `sf` objects together, call `geom_sf` again and specify the new `sf` object:
+
+
+```r
+*iowa.sf %&gt;%
+  ggplot() + 
+  geom_sf(fill = "white") + 
+  labs(title = "Iowa Counties") +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_sf_text(aes(label = COUNTY), size = 2.25) + # inherits iowa.sf
+* geom_sf(data = iowa.districts, color = "red")
+```
+
+
+---
+
+### Be careful when plotting multiple `sf` objects together...
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(fill = "white") + 
+  labs(title = "Iowa Counties") +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_sf_text(aes(label = COUNTY), size = 2.25) + 
+  geom_sf(data = iowa.districts, color = "red") 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Be careful when plotting multiple `sf` objects together...
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(fill = "white") + 
+  labs(title = "Iowa Counties") +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_sf_text(aes(label = COUNTY), size = 2.25) + 
+* geom_sf(data = iowa.districts, color = "red", fill = NA)
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, center, middle
+
+# Converting coordinates to `sf` objects
+
+---
+
+### We can add points by latitude and longitude, but...
+
+
+```r
+sampling_site_coords &lt;- 
+  read.csv("./data/sampling_site_coordinates.csv")
+```
+
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(fill = "white") + 
+* geom_sf(data = sampling_site_coords)
+```
+
+```
+## Error: stat_sf requires the following missing aesthetics: geometry
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-22-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Use `st_as_sf` to convert lat/long coordinates to an `sf` object
+
+
+```r
+sampling_site_coords &lt;- sampling_site_coords %&gt;% 
+  st_as_sf(coords = c("site_longitude", "site_latitude"), 
+           crs = 4269) 
+
+head(sampling_site_coords)
+```
+
+```
+## Simple feature collection with 6 features and 1 field
+## geometry type:  POINT
+## dimension:      XY
+## bbox:           xmin: -95.02906 ymin: 41.79395 xmax: -91.5359 ymax: 43.12524
+## geographic CRS: NAD83
+##            site_name                   geometry
+## 1     Backbone Beach   POINT (-91.5359 42.6015)
+## 2  Beed's Lake Beach POINT (-93.23654 42.77043)
+## 3    Big Creek Beach POINT (-93.73185 41.79395)
+## 4   Black Hawk Beach POINT (-95.02906 42.29637)
+## 5 Brushy Creek Beach POINT (-93.97857 42.38858)
+## 6   Clear Lake Beach POINT (-93.41469 43.12524)
+```
+
+
+.footnote[See https://epsg.io/ for more information about coordinate reference systems. In general, mapping the coordinates to the same CRS as the shape object you're using will work out fine.]
+
+---
+
+### Now we're ready to plot
+
+
+```r
+iowa.sf %&gt;% 
+  ggplot() + 
+  geom_sf(fill = "white") + 
+  labs(title = "DNR Sampling Site Locations") +  
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_sf(data = sampling_site_coords, color = "red") 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+
+# Preparing county population data
+
+---
+
+
+```r
+iowa.county_pops &lt;- read.csv('data/iowa_county_pops.csv')
+
+head(iowa.county_pops)
+```
+
+```
+##      FIPS    County                    City          Year Estimate
+## 1   19185     Wayne Balance of Wayne County  July 01 2011     2656
+## 2 1917985 Palo Alto                Cylinder  July 01 2017       85
+## 3 1981840      Linn           Walford (pt.) April 01 2010      382
+## 4 1978195  Ringgold                 Tingley April 01 2010      184
+## 5 1907750     Boone                 Boxholm April 01 2010      195
+## 6 1934500    Shelby                  Harlan  July 01 2014     4975
+##                    Primary.Point
+## 1 POINT (-93.3273639 40.7394702)
+## 2  POINT (-94.5511492 43.089664)
+## 3 POINT (-91.8305169 41.8796623)
+## 4   POINT (-94.195803 40.852747)
+## 5 POINT (-94.1062028 42.1736058)
+## 6 POINT (-95.3268616 41.6495154)
+```
+
+
+.footnote[Source: https://data.iowa.gov/]
+---
+
+### Date prep
+
+- Extract year from `Year` column
+- Convert year to integer
+- Rename O'Brien county to match the `iowa.sf` object.
+
+
+
+```r
+iowa.county_pops &lt;- iowa.county_pops %&gt;% 
+  separate('Year', 
+           c(NA, NA, 'Year'), 
+           sep = ' ') %&gt;% 
+  mutate(County = replace(County,
+                     County == "O'Brien", "Obrien"),
+         Year = as.integer(Year)) 
+
+head(iowa.county_pops)
+```
+
+```
+##      FIPS    County                    City Year Estimate
+## 1   19185     Wayne Balance of Wayne County 2011     2656
+## 2 1917985 Palo Alto                Cylinder 2017       85
+## 3 1981840      Linn           Walford (pt.) 2010      382
+## 4 1978195  Ringgold                 Tingley 2010      184
+## 5 1907750     Boone                 Boxholm 2010      195
+## 6 1934500    Shelby                  Harlan 2014     4975
+##                    Primary.Point
+## 1 POINT (-93.3273639 40.7394702)
+## 2  POINT (-94.5511492 43.089664)
+## 3 POINT (-91.8305169 41.8796623)
+## 4   POINT (-94.195803 40.852747)
+## 5 POINT (-94.1062028 42.1736058)
+## 6 POINT (-95.3268616 41.6495154)
+```
+
+---
+
+### Summarize year by year change 
+
+
+```r
+iowa.county_pops.by_year &lt;- iowa.county_pops %&gt;% 
+  group_by(County, Year) %&gt;% 
+  summarise(total_pop = sum(Estimate, na.rm = TRUE)) %&gt;% 
+  mutate(last_year_pop = lag(total_pop)) %&gt;% 
+  mutate(pct_change = (total_pop / last_year_pop - 1) * 100) %&gt;% 
+  ungroup() %&gt;% 
+  filter(Year &gt; 2010)
+```
+
+```
+## `summarise()` regrouping output by 'County' (override with `.groups` argument)
+```
+
+---
+
+Let's do a quick visualization:
+
+
+
+```r
+iowa.county_pops.by_year %&gt;% 
+  filter(Year &gt; 2010,
+         County %in% sample(unique(County), 20)) %&gt;% 
+  ggplot(aes(Year, pct_change)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  facet_wrap(~ County)
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-28-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: inverse, center, middle
+
+# Working towards an animation
+
+---
+### Let's combine our population data with the `iowa.sf` object:
+
+
+```r
+iowa.joined_sf &lt;- 
+  inner_join(iowa.sf, 
+             iowa.county_pops.by_year, 
+             by = c("COUNTY" = "County"))
+```
+
+**Sanity check**: How many rows does `iowa.joined_sf` have? How many should it have?
+
+---
+### Let's begin by plotting one year:
+
+
+```r
+iowa.joined_sf %&gt;% 
+  filter(Year == 2018) %&gt;% 
+  ggplot(aes(fill = pct_change)) + 
+  geom_sf()
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-30-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Let's clean this up:
+
+
+```r
+iowa.joined_sf %&gt;% 
+  filter(Year == 2018) %&gt;% 
+  ggplot(aes(fill = pct_change)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(name = "% Change\nfrom prev. year") +
+  labs(title = "Percentage change in Iowa county populations by year",
+       subtitle = "Year: 2018") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.background = element_rect(fill = NA)) + 
+  geom_sf_text(aes(label = COUNTY), size = 2.5)
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-31-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+### Now that we have our graph mostly how we want it, let's animate it
+
+
+```r
+library(gganimate)
+
+iowa.joined_sf %&gt;% 
+  ggplot(aes(fill = pct_change)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(name = "% Change\nfrom prev. year") +
+  labs(title = "Percentage change in Iowa county populations by year",
+*      subtitle = "Year: { current_frame }") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.position = "right") + 
+  geom_sf_text(aes(label = COUNTY), size = 2.5) + 
+* transition_manual(Year)
+```
+
+```
+## nframes and fps adjusted to match transition
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-32-1.gif" style="display: block; margin: auto;" /&gt;
+
+
+---
+class: inverse, center, middle
+
+# Bonus: `geofacet`
+
+---
+
+### The `geofacet` package makes it easy to make complex maps with the US map
+
+As an example, let's plot the change in state population over the past few years on the US map.
+
+---
+
+### The data:
+
+```r
+state_pops &lt;- read.csv("data/us_state_pops.csv", check.names = FALSE) %&gt;% 
+  as_tibble() 
+
+state_pops_long &lt;- state_pops %&gt;% 
+  pivot_longer(cols = `2010`:`2019`, names_to = "year", values_to = "pop") %&gt;% 
+  mutate(year = as.integer(year)) %&gt;% 
+  group_by(state) %&gt;% 
+  mutate(pct_change = (pop / lag(pop) - 1) * 100) %&gt;%
+  ungroup() %&gt;% 
+  filter(year &gt; 2010)
+
+head(state_pops_long)
+```
+
+.footnote[Source: https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html]
+
+---
+
+### A quick visualization:
+
+
+```r
+state_pops_long %&gt;% 
+  filter(state != sample(unique(state), 1)) %&gt;% # to make faceting nicer
+  ggplot(aes(year, pct_change, color = state)) + 
+  geom_point() + 
+  geom_line() +
+  labs(x = "",
+       y = "",
+       title = "Yearly percent change in population by state from 2010 to 2019",
+       caption = "Source: U.S. Census Bureau, Population Division") +
+  facet_wrap(~ state, ncol = 10) +
+  scale_x_continuous(breaks = seq(2011, 2019, 2), expand = c(0, 0)) +
+  scale_y_continuous(labels = function (x) paste0(x, "%")) + 
+  theme_bw() +
+  geom_hline(yintercept = 0, alpha = 0.5, linetype = "dashed") + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank() ) 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+
+```r
+library(geofacet)
+
+state_pops_long %&gt;% 
+  ggplot(aes(year, pct_change, color = state)) + 
+  geom_point() + 
+  geom_line() +
+  labs(x = "",
+       y = "",
+       title = "Yearly percent change in population by state") +
+* facet_geo(~ state) +
+  scale_x_continuous(breaks = seq(2011, 2019, 2)) +
+  theme_minimal() + 
+  geom_hline(yintercept = 0, alpha = 0.5, linetype = "dashed") + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank()) 
+```
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-35-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Thanks for your time! Have a nice day!
+
+- Email me at pev@iastate.edu if you want to talk about coding, visualizations, Vim, or Teamfight Tactics :)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
