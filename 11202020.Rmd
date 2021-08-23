@@ -14,12 +14,11 @@ class: middle
 
 ```{r include=FALSE}
 knitr::opts_chunk$set(fig.align="center",
-                      fig.height = 4)
+                      fig.height = 5)
 ```
 
 
-# Today's goal:
-
+# Today's goal: 
 - Reproduce this animation:
 
 .center[
@@ -39,9 +38,9 @@ knitr::opts_chunk$set(fig.align="center",
 
 - Bioinformatics PhD student in Adina Howe's lab
 - Background in math and computer science
-- Previous project was MetaFunPrimer, a primer design pipeline for high-throughput qPCR.
+- Previous project was [MetaFunPrimer](https://github.com/pommevilla/MetaFunPrimer), a primer design pipeline for high-throughput qPCR.
 - Current research is on the impact of human activity on biodiversity and environmental multifunctionality.
-- Interested in machine learning, statistical modeling, Python, R, data visualiziation, reproducible research, and VIM
+- Interested in machine learning, statistical modeling, Python, R, data visualization, reproducible research, and vim
 ---
 class: inverse, center, middle
 
@@ -71,7 +70,6 @@ git clone https://github.com/pommevilla/lunchinatoR.git
 library(sf)
 
 iowa.sf <- st_read('data/iowa_county_shapes') 
-
 ```
 
 .footnote[Source: https://geodata.iowa.gov/dataset/county-boundaries-iowa]
@@ -106,10 +104,7 @@ class: middle
 
 ```{r, warning=FALSE, message=FALSE, results='hide'}
 library(tidyverse)
-```
 
-
-```{r}
 iowa.sf %>% 
   ggplot() + 
   geom_sf() 
@@ -284,14 +279,16 @@ iowa.sf %>%
 
 ---
 
-When we read in `iowa.districts`, we got a warning message that said "automatically selected the first layer in a data source containing more than one." This is because the `iowa_congressional_districts` folder contains more than one set of geometry information. You can access these with the `layer` argument of `st_read`:
+* When we read in `iowa.districts`, we got a warning message that said "automatically selected the first layer in a data source containing more than one."
+* This is because the `iowa_congressional_districts` folder contains more than one set of geometry information. 
+* You can access these with the `layer` argument of `st_read`:
 
 ```{r warning=FALSE, message=FALSE, results='hide'}
 iowa.house_districts <-  
   st_read('data/iowa_congressional_districts',
           layer = "IA_House_2013")
 ```
-
+<br><br>
 Try plotting the other two geometries present in the `iowa_congressional_districts` folder.
 
 ---
@@ -329,6 +326,8 @@ head(sampling_site_coords)
 ```
 
 
+---
+
 .footnote[See https://epsg.io/ for more information about coordinate reference systems. In general, mapping the coordinates to the same CRS as the shape object you're using will work out fine.]
 
 ---
@@ -361,14 +360,28 @@ head(iowa.county_pops)
 .footnote[Source: https://data.iowa.gov/]
 ---
 
-### Date prep
+### Data prep
 
 - Extract year from `Year` column
 - Convert year to integer
 - Rename O'Brien county to match the `iowa.sf` object.
 
 
-```{r}
+```{r, eval=FALSE}
+iowa.county_pops <- iowa.county_pops %>% 
+  separate('Year', 
+           c(NA, NA, 'Year'), 
+           sep = ' ') %>% 
+  mutate(County = replace(County,
+                     County == "O'Brien", "Obrien"),
+         Year = as.integer(Year)) 
+
+head(iowa.county_pops)
+```
+
+---
+
+```{r, echo=FALSE}
 iowa.county_pops <- iowa.county_pops %>% 
   separate('Year', 
            c(NA, NA, 'Year'), 
@@ -384,7 +397,7 @@ head(iowa.county_pops)
 
 ### Summarize year by year change 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 iowa.county_pops.by_year <- iowa.county_pops %>% 
   group_by(County, Year) %>% 
   summarise(total_pop = sum(Estimate, na.rm = TRUE)) %>% 
@@ -441,7 +454,7 @@ iowa.joined_sf %>%
 
 ### Let's clean this up:
 
-```{r}
+```{r eval=FALSE}
 iowa.joined_sf %>% 
   filter(Year == 2018) %>% 
   ggplot(aes(fill = pct_change)) + 
@@ -456,10 +469,47 @@ iowa.joined_sf %>%
 ```
 
 ---
+class: center, middle
 
+```{r echo=FALSE}
+iowa.joined_sf %>% 
+  filter(Year == 2018) %>% 
+  ggplot(aes(fill = pct_change)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(name = "% Change\nfrom prev. year") +
+  labs(title = "Percentage change in Iowa county populations by year",
+       subtitle = "Year: 2018") + 
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.background = element_rect(fill = NA)) + 
+  geom_sf_text(aes(label = COUNTY), size = 2.5)
+```
+
+---
 ### Now that we have our graph mostly how we want it, let's animate it
 
-```{r}
+```{r, eval=FALSE}
+library(gganimate)
+
+iowa.joined_sf %>% 
+  ggplot(aes(fill = pct_change)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(name = "% Change\nfrom prev. year") +
+  labs(title = "Percentage change in Iowa county populations by year",
+       subtitle = "Year: { current_frame }") +  #<<
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.background = element_rect(fill = NA),
+        legend.position = "right") + 
+  geom_sf_text(aes(label = COUNTY), size = 2.5) + 
+  transition_manual(Year) #<<
+```
+
+
+---
+class: center, middle
+
+```{r, echo=FALSE}
 library(gganimate)
 
 iowa.joined_sf %>% 
@@ -512,7 +562,32 @@ head(state_pops_long)
 
 ### A quick visualization:
 
-```{r}
+```{r, eval=FALSE}
+state_pops_long %>% 
+  filter(state != sample(unique(state), 1)) %>% # to make faceting nicer
+  ggplot(aes(year, pct_change, color = state)) + 
+  geom_point() + 
+  geom_line() +
+  labs(x = "",
+       y = "",
+       title = "Yearly percent change in population by state from 2010 to 2019",
+       caption = "Source: U.S. Census Bureau, Population Division") +
+  facet_wrap(~ state, ncol = 10) +
+  scale_x_continuous(breaks = seq(2011, 2019, 2), expand = c(0, 0)) +
+  scale_y_continuous(labels = function (x) paste0(x, "%")) + 
+  theme_bw() +
+  geom_hline(yintercept = 0, alpha = 0.5, linetype = "dashed") + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank() ) 
+```
+
+
+---
+class: center, middle
+
+```{r, echo=FALSE}
 state_pops_long %>% 
   filter(state != sample(unique(state), 1)) %>% # to make faceting nicer
   ggplot(aes(year, pct_change, color = state)) + 
@@ -536,7 +611,33 @@ state_pops_long %>%
 
 ---
 
-```{r}
+`geofacet::facet_geo` maps each of the plots onto the states:
+
+```{r, eval=FALSE}
+library(geofacet)
+
+state_pops_long %>% 
+  ggplot(aes(year, pct_change, color = state)) + 
+  geom_point() + 
+  geom_line() +
+  labs(x = "",
+       y = "",
+       title = "Yearly percent change in population by state") +
+  facet_geo(~ state) + #<<
+  scale_x_continuous(breaks = seq(2011, 2019, 2)) +
+  theme_minimal() + 
+  geom_hline(yintercept = 0, alpha = 0.5, linetype = "dashed") + 
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank()) 
+```
+
+---
+class: center, middle
+
+```{r, echo=FALSE}
 library(geofacet)
 
 state_pops_long %>% 

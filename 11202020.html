@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="author" content="Paul Villanueva" />
     <meta name="date" content="2020-11-20" />
+    <script src="libs/header-attrs-2.10/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
     <link href="libs/remark-css-0.0.1/default-fonts.css" rel="stylesheet" />
   </head>
@@ -23,8 +24,7 @@ class: middle
 
 
 
-# Today's goal:
-
+# Today's goal: 
 - Reproduce this animation:
 
 .center[
@@ -44,9 +44,9 @@ class: middle
 
 - Bioinformatics PhD student in Adina Howe's lab
 - Background in math and computer science
-- Previous project was MetaFunPrimer, a primer design pipeline for high-throughput qPCR.
+- Previous project was [MetaFunPrimer](https://github.com/pommevilla/MetaFunPrimer), a primer design pipeline for high-throughput qPCR.
 - Current research is on the impact of human activity on biodiversity and environmental multifunctionality.
-- Interested in machine learning, statistical modeling, Python, R, data visualiziation, reproducible research, and VIM
+- Interested in machine learning, statistical modeling, Python, R, data visualization, reproducible research, and vim
 ---
 class: inverse, center, middle
 
@@ -92,10 +92,10 @@ iowa.sf
 
 ```
 ## Simple feature collection with 99 features and 10 fields
-## geometry type:  POLYGON
-## dimension:      XY
-## bbox:           xmin: 202073.8 ymin: 4470598 xmax: 736849.2 ymax: 4822674
-## projected CRS:  NAD83 / UTM zone 15N
+## Geometry type: POLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 202073.8 ymin: 4470598 xmax: 736849.2 ymax: 4822674
+## Projected CRS: NAD83 / UTM zone 15N
 ## First 10 features:
 ##    Shape_Leng Shape_Area       AREA PERIMETER CO_NUMBER CO_FIPS    ACRES  FIPS
 ## 1    192784.4 1394779996 1394779996  192783.7        56     111 344657.6 19111
@@ -150,17 +150,13 @@ class: middle
 
 ```r
 library(tidyverse)
-```
 
-
-
-```r
 iowa.sf %&gt;% 
   ggplot() + 
   geom_sf() 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-6-1.png" style="display: block; margin: auto;" /&gt;
 ---
 
 ### `ggplot` and `dplyr` things work with `sf` objects
@@ -172,7 +168,7 @@ iowa.sf %&gt;%
   geom_sf(aes(fill = ACRES))
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-7-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -186,7 +182,7 @@ iowa.sf %&gt;%
   geom_sf(aes(fill = ACRES))
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-8-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -200,7 +196,7 @@ iowa.sf %&gt;%
   geom_sf(aes(fill = ACRES)) 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-9-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -216,7 +212,7 @@ iowa.sf %&gt;%
   geom_sf(aes(fill = ACRES))
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-10-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -229,7 +225,7 @@ iowa.sf %&gt;%
 *      subtitle = "Filled by area")
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -245,7 +241,7 @@ iowa.sf %&gt;%
 *       legend.position = "none")
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-12-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -264,7 +260,7 @@ iowa.sf %&gt;%
 * geom_sf_text(aes(label = COUNTY), size = 2.25)
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-14-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, center, middle
@@ -299,7 +295,7 @@ iowa.districts %&gt;%
   geom_sf()
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-16-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -312,7 +308,7 @@ iowa.districts %&gt;%
 * theme(plot.title = element_text(hjust = 0.5))
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-18-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-17-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -345,7 +341,7 @@ iowa.sf %&gt;%
   geom_sf(data = iowa.districts, color = "red") 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-19-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -362,12 +358,14 @@ iowa.sf %&gt;%
 * geom_sf(data = iowa.districts, color = "red", fill = NA)
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-21-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-20-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
 
-When we read in `iowa.districts`, we got a warning message that said "automatically selected the first layer in a data source containing more than one." This is because the `iowa_congressional_districts` folder contains more than one set of geometry information. You can access these with the `layer` argument of `st_read`:
+* When we read in `iowa.districts`, we got a warning message that said "automatically selected the first layer in a data source containing more than one."
+* This is because the `iowa_congressional_districts` folder contains more than one set of geometry information. 
+* You can access these with the `layer` argument of `st_read`:
 
 
 ```r
@@ -375,7 +373,7 @@ iowa.house_districts &lt;-
   st_read('data/iowa_congressional_districts',
           layer = "IA_House_2013")
 ```
-
+&lt;br&gt;&lt;br&gt;
 Try plotting the other two geometries present in the `iowa_congressional_districts` folder.
 
 ---
@@ -406,7 +404,7 @@ iowa.sf %&gt;%
 ## Error: stat_sf requires the following missing aesthetics: geometry
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-24-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-23-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
@@ -423,10 +421,10 @@ head(sampling_site_coords)
 
 ```
 ## Simple feature collection with 6 features and 1 field
-## geometry type:  POINT
-## dimension:      XY
-## bbox:           xmin: -95.02906 ymin: 41.79395 xmax: -91.5359 ymax: 43.12524
-## geographic CRS: NAD83
+## Geometry type: POINT
+## Dimension:     XY
+## Bounding box:  xmin: -95.02906 ymin: 41.79395 xmax: -91.5359 ymax: 43.12524
+## Geodetic CRS:  NAD83
 ##            site_name                   geometry
 ## 1     Backbone Beach   POINT (-91.5359 42.6015)
 ## 2  Beed's Lake Beach POINT (-93.23654 42.77043)
@@ -436,6 +434,8 @@ head(sampling_site_coords)
 ## 6   Clear Lake Beach POINT (-93.41469 43.12524)
 ```
 
+
+---
 
 .footnote[See https://epsg.io/ for more information about coordinate reference systems. In general, mapping the coordinates to the same CRS as the shape object you're using will work out fine.]
 
@@ -453,7 +453,7 @@ iowa.sf %&gt;%
   geom_sf(data = sampling_site_coords, color = "red") 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-26-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-25-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 class: inverse, center, middle
@@ -490,7 +490,7 @@ head(iowa.county_pops)
 .footnote[Source: https://data.iowa.gov/]
 ---
 
-### Date prep
+### Data prep
 
 - Extract year from `Year` column
 - Convert year to integer
@@ -509,6 +509,9 @@ iowa.county_pops &lt;- iowa.county_pops %&gt;%
 
 head(iowa.county_pops)
 ```
+
+---
+
 
 ```
 ##      FIPS    County                    City Year Estimate
@@ -540,10 +543,6 @@ iowa.county_pops.by_year &lt;- iowa.county_pops %&gt;%
   mutate(pct_change = (total_pop / last_year_pop - 1) * 100) %&gt;% 
   ungroup() %&gt;% 
   filter(Year &gt; 2010)
-```
-
-```
-## `summarise()` regrouping output by 'County' (override with `.groups` argument)
 ```
 
 ---
@@ -615,10 +614,12 @@ iowa.joined_sf %&gt;%
   geom_sf_text(aes(label = COUNTY), size = 2.5)
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-33-1.png" style="display: block; margin: auto;" /&gt;
+---
+class: center, middle
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-34-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
-
 ### Now that we have our graph mostly how we want it, let's animate it
 
 
@@ -639,11 +640,16 @@ iowa.joined_sf %&gt;%
 * transition_manual(Year)
 ```
 
+
+---
+class: center, middle
+
+
 ```
 ## nframes and fps adjusted to match transition
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-34-1.gif" style="display: block; margin: auto;" /&gt;
+&lt;img src="11202020_files/figure-html/unnamed-chunk-36-1.gif" style="display: block; margin: auto;" /&gt;
 
 
 ---
@@ -704,10 +710,16 @@ state_pops_long %&gt;%
         axis.ticks.x = element_blank() ) 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-36-1.png" style="display: block; margin: auto;" /&gt;
+
+---
+class: center, middle
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-39-1.png" style="display: block; margin: auto;" /&gt;
 
 
 ---
+
+`geofacet::facet_geo` maps each of the plots onto the states:
 
 
 ```r
@@ -731,7 +743,10 @@ state_pops_long %&gt;%
         axis.ticks = element_blank()) 
 ```
 
-&lt;img src="11202020_files/figure-html/unnamed-chunk-37-1.png" style="display: block; margin: auto;" /&gt;
+---
+class: center, middle
+
+&lt;img src="11202020_files/figure-html/unnamed-chunk-41-1.png" style="display: block; margin: auto;" /&gt;
 
 ---
 
